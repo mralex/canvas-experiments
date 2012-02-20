@@ -1,0 +1,53 @@
+body {
+	background: #000;
+	color: #fff;
+	font: 1em/1.5em "Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin-top: 100px;
+}
+#game {
+	display: block;
+	width: 720px;
+	height: 480px;
+	margin: 0 auto;
+	position: relative;
+	
+}
+#screen {
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+}
+#overlay {
+	width: 720px;
+	height: 480px;
+	background: transparent;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	
+	box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.95);
+}
+
+#log {
+	width: 720px;
+	margin: 50px auto;
+	border-top: 1px solid #ccc;
+}
+
+#log ul {
+	color: #ccc;
+	list-style: none;
+	font-size: 90%;
+	margin: 0;
+	padding: 0;
+}
+
+#log ul li {
+	margin: 0;
+	padding: 0;
+}
+
+#log ul li:before {
+	content: '> ';
+}
