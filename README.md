@@ -1,9 +1,9 @@
 Game design related experiments for HTML5 Canvas
 ================================================
 
-Tested with:
-  * Firefox 11 beta
-  * Chrome
+### Tested with:
+ * Firefox 11 beta
+ * Chrome
 
 These experiments are built using jQuery 1.7.1 and John Resig's simple JS inheritance library. 
 
