@@ -397,7 +397,7 @@ var Game = (function($) {
             tileMap = new TileMap();
             
             player = new Player(48, 48);
-            player.loc = Point(Math.floor(Math.random() * (rows * TILE_SIZE - player.size.width)), Math.floor(Math.random() * (cols * TILE_SIZE - player.size.height)))
+            player.loc = Point(Math.floor(Math.random() * rows) * TILE_SIZE, Math.floor(Math.random() * cols) * TILE_SIZE)
                     
             frames = 0;
             lastFrames = new Date();
