@@ -215,7 +215,7 @@ var Game = (function($) {
             
             var nx = this.loc.x - this.motion.x,
                 ny = this.loc.y - this.motion.y,
-                tile1, tile2, dir;
+                tile1, tile2, dir, pad = TILE_SIZE / 8;
             
             if (this.motion.y > 0) dir = this.dirs.n;
             if (this.motion.y < 0) dir = this.dirs.s;
@@ -224,22 +224,22 @@ var Game = (function($) {
             
             switch(dir) {
                 case this.dirs.n:
-                    tile1 = tileMap.tileAtPos(nx, ny);
-                    tile2 = tileMap.tileAtPos(nx + this.size.width, ny);
+                    tile1 = tileMap.tileAtPos(nx + pad, ny + pad);
+                    tile2 = tileMap.tileAtPos(nx + this.size.width - pad, ny + pad);
                     break;
                 case this.dirs.s:
-                    tile1 = tileMap.tileAtPos(nx, ny + this.size.height);
-                    tile2 = tileMap.tileAtPos(nx + this.size.width, ny + this.size.height);
+                    tile1 = tileMap.tileAtPos(nx + pad, ny + this.size.height - pad);
+                    tile2 = tileMap.tileAtPos(nx + this.size.width - pad, ny + this.size.height - pad);
                     
                     break;
                 case this.dirs.e:
-                    tile1 = tileMap.tileAtPos(nx + this.size.width, ny);
-                    tile2 = tileMap.tileAtPos(nx + this.size.width, ny + this.size.height);
+                    tile1 = tileMap.tileAtPos(nx + this.size.width - pad, ny + pad);
+                    tile2 = tileMap.tileAtPos(nx + this.size.width - pad, ny + this.size.height - pad);
                     
                     break;
                 case this.dirs.w:
-                    tile1 = tileMap.tileAtPos(nx, ny);
-                    tile2 = tileMap.tileAtPos(nx, ny + this.size.height);
+                    tile1 = tileMap.tileAtPos(nx + pad, ny + pad);
+                    tile2 = tileMap.tileAtPos(nx + pad, ny + this.size.height - pad);
                     
                     break;
             };
@@ -292,7 +292,7 @@ var Game = (function($) {
         isMouseDown = false;
     },
     
-    MOVE_SPEED = 10,
+    MOVE_SPEED = 12,
     
     keyDown = function(e) {
         if (!(e.keyCode in {87: null, 83: null, 65: null, 68: null})) {
