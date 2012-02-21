@@ -80,6 +80,10 @@ var Game = (function($) {
             this.size = Size(width, height);
             this.color = randomRGB();
         },
+        isWalkable: function() {
+            if (this.type == 1) return false;
+            return true;
+        },
         render: function(x, y) {
             spriteMap.draw(this.type, 0, x, y);
             
@@ -104,6 +108,14 @@ var Game = (function($) {
                     this.tiles[y][x] = new Tile(TILE_SIZE, TILE_SIZE);
                 }
             }
+        },
+        tileAtPos: function(x, y) {
+            var tx = Math.floor(x / TILE_SIZE),
+                ty = Math.floor(y / TILE_SIZE);
+            
+            if (tx < 0 || tx > cols || ty < 0 || ty > rows) return null;
+                        
+            return this.tiles[ty][tx];
         },
         update: function(targetMob) {
             // Focus map view on the target mob
@@ -150,6 +162,9 @@ var Game = (function($) {
             this.color = randomRGB(200);
             this.dir = 1;
         },
+        checkCollision: function() {
+            
+        },
         checkBounds: function() {
             if (this.loc.x < 0) this.loc.x = 0;
             if (this.loc.x + this.size.width > (rows * TILE_SIZE)) this.loc.x = (rows * TILE_SIZE) - this.size.width;
@@ -189,14 +204,55 @@ var Game = (function($) {
             this.color = '#ff0';
             this.motion = Point(0, 0);
         },
+        dirs: {
+            n: 1,
+            s: 2,
+            e: 3,
+            w: 4
+        },
         update: function() {
             if (this.motion.x == 0 && this.motion.y == 0) return;
+            
+            var nx = this.loc.x - this.motion.x,
+                ny = this.loc.y - this.motion.y,
+                tile1, tile2, dir;
+            
+            if (this.motion.y > 0) dir = this.dirs.n;
+            if (this.motion.y < 0) dir = this.dirs.s;
+            if (this.motion.x > 0) dir = this.dirs.w;
+            if (this.motion.x < 0) dir = this.dirs.e;
+            
+            switch(dir) {
+                case this.dirs.n:
+                    tile1 = tileMap.tileAtPos(nx, ny);
+                    tile2 = tileMap.tileAtPos(nx + this.size.width, ny);
+                    break;
+                case this.dirs.s:
+                    tile1 = tileMap.tileAtPos(nx, ny + this.size.height);
+                    tile2 = tileMap.tileAtPos(nx + this.size.width, ny + this.size.height);
+                    
+                    break;
+                case this.dirs.e:
+                    tile1 = tileMap.tileAtPos(nx + this.size.width, ny);
+                    tile2 = tileMap.tileAtPos(nx + this.size.width, ny + this.size.height);
+                    
+                    break;
+                case this.dirs.w:
+                    tile1 = tileMap.tileAtPos(nx, ny);
+                    tile2 = tileMap.tileAtPos(nx, ny + this.size.height);
+                    
+                    break;
+            };
+            
+            if (tile1 && tile2 && (!tile1.isWalkable() || !tile2.isWalkable())) {
+                this.motion = Point(0, 0);
+            }
             
             this.loc.x -= this.motion.x;
             this.loc.y -= this.motion.y;
             
             this.checkBounds();
-            
+                        
             this.motion = Point(0, 0);
         }
     }),
