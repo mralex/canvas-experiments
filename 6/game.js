@@ -38,8 +38,8 @@ var Game = (function($) {
     };
     
     var     
-    cols = 32,
-    rows = 32,
+    cols = 64,
+    rows = 64,
     offset = Point(0, 0);
     tileMap = null,
     spriteMap = null,
@@ -397,6 +397,7 @@ var Game = (function($) {
             tileMap = new TileMap();
             
             player = new Player(48, 48);
+            player.loc = Point(Math.floor(Math.random() * (rows * TILE_SIZE - player.size.width)), Math.floor(Math.random() * (cols * TILE_SIZE - player.size.height)))
                     
             frames = 0;
             lastFrames = new Date();
