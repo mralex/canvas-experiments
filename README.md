@@ -17,4 +17,4 @@ Experiments
 3. Tilemap test. Move the map around with W, S, A, D.
 4. Tilemap test with NPC mobs. Same as 3, with a set of mobs that race across the map.
 5. Spritemap test. A tilemap rendered with sprites loaded from a spritemap (sprite atlas).
-
+6. Player character movement test. Introduced a player character object who can move around on the map.
