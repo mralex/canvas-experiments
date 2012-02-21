@@ -38,11 +38,12 @@ var Game = (function($) {
 	};
 	
 	var 	
-	cols = 256,
-	rows = 256,
+	cols = 32,
+	rows = 32,
 	offset = Point(0, 0);
 	tileMap = null,
 	spriteMap = null,
+	player = null,
 	TILE_SIZE = 48,
 	selectedTile = null,
 	
@@ -121,6 +122,79 @@ var Game = (function($) {
 		}
 	}),
 	
+	Mob = Class.extend({
+		init: function() {
+			this.size = Size(75, 50);
+			//Math.floor(canvas.width / 2 - (75 / 2)), Math.floor(canvas.height / 2 - (50 / 2))
+			this.loc = Point(10 + Math.random() * 100, 20 + Math.random() * (canvas.height - this.size.height));
+			this.speed = 1 + Math.random() * 2;
+			this.ticks = 4;
+			this.color = randomRGB(200);
+			this.dir = 1;
+		},
+		update: function() {
+			this.ticks--;
+			if (this.ticks < 1) {
+				this.loc.x += this.speed;
+				
+				if (this.loc.x + this.size.width > tileMap.width) {
+					this.loc.x = 0 - this.size.width;
+				}
+				
+				this.ticks = 4;
+			}
+		},
+		render: function() {                                                             
+			if ((this.loc.x + offset.x >= -this.size.width) && (this.loc.x + offset.x < canvas.width) &&
+			    (this.loc.y + offset.y >= -this.size.height) && (this.loc.y + offset.y < canvas.height)) {
+				ctx.fillStyle = this.color; //'#ff0';
+				//ctx.arc(this.point.x, this.point.y, this.size.width / 2, 0, CIRCLE_RAD, false);
+				ctx.fillRect(this.loc.x + offset.x, this.loc.y + offset.y, this.size.width, this.size.height);
+				ctx.fill();
+			}
+		}
+	}),
+	
+	Player = Mob.extend({
+		init: function(w, h) {
+			this._super();
+			this.size = Size(w, h);
+			this.center = Point(canvas.width / 2 - (w / 2), canvas.height / 2 - (h / 2));
+			this.loc = Point(canvas.width / 2 - (w / 2), canvas.height / 2 - (h / 2));
+			this.color = '#ff0';
+			this.motion = Point(0, 0);
+		},
+		update: function() {
+			if (this.motion.x == 0 && this.motion.y == 0) return;
+			
+			this.loc.x -= this.motion.x;
+			this.loc.y -= this.motion.y;
+			
+			if (this.loc.x < 0) this.loc.x = 0;
+			if (this.loc.x + this.size.width > (rows * TILE_SIZE)) this.loc.x = (rows * TILE_SIZE) - this.size.width - 5;
+			
+			if (this.loc.y < 0) this.loc.y = 0;
+			if (this.loc.y + this.size.height > (cols * TILE_SIZE)) this.loc.y = (rows * TILE_SIZE) - this.size.height - 5;
+						
+			if ((this.loc.x > this.center.x) && (this.loc.x < this.center.x + (rows * TILE_SIZE) - canvas.width)) offset.x += this.motion.x;
+			if ((this.loc.y > this.center.y) && (this.loc.y < this.center.y + (cols * TILE_SIZE) - canvas.height)) offset.y += this.motion.y;
+			
+			if (offset.x > 0) {
+				offset.x = 0;
+			} else if(offset.x < -(rows * TILE_SIZE) + canvas.width) {
+				offset.x = -(rows * TILE_SIZE) + canvas.width;
+			}
+
+			if (offset.y > 0) {
+				offset.y = 0;
+			} else if (offset.y < -(cols * TILE_SIZE) + canvas.height) {
+				offset.y = -(cols * TILE_SIZE) + canvas.height;
+			}
+			
+			this.motion = Point(0, 0);
+		}
+	}),
+		
 	log = function(msg) {
 		$('#log ul').append('<li>' + msg + '</li>');
 	},
@@ -165,32 +239,18 @@ var Game = (function($) {
 
 		switch (e.keyCode) {
 			case 87: // w
-				offset.y += MOVE_SPEED;
+				player.motion.y += MOVE_SPEED;
 				break;
 			case 83: //s
-				offset.y -= MOVE_SPEED;
+				player.motion.y -= MOVE_SPEED;
 				break;
 			case 65: // a
-				offset.x += MOVE_SPEED;
+				player.motion.x += MOVE_SPEED;
 				break;
 			case 68: // d
-				offset.x -= MOVE_SPEED;
+				player.motion.x -= MOVE_SPEED;
 				break;
 		}
-		
-		if (offset.x > 0) {
-			offset.x = 0;
-		} else if(offset.x < -(rows * TILE_SIZE) + canvas.width) {
-			offset.x = -(rows * TILE_SIZE) + canvas.width;
-		}
-		
-		if (offset.y > 0) {
-			offset.y = 0;
-		} else if (offset.y < -(cols * TILE_SIZE) + canvas.height) {
-			offset.y = -(cols * TILE_SIZE) + canvas.height;
-		}
-		$('#stats').html('x: ' + offset.x + ' y: ' + offset.y);
-		
 	},
 	
 	keyUp = function(e) {
@@ -207,55 +267,9 @@ var Game = (function($) {
 	draw = function() {
 		var w = screenWidth / 15, h = w;
 		
-		// for (var y = 0; y < 10; y++) {
-		// 			for (var x = 0; x < w; x++) {
-		// 				ctx.fillStyle = randomRGB();
-		// 				 //ctx.fillRect(screenWidth / 2 - 25, screenHeight / 2 - 25, 50, 50);
-		// 				ctx.fillRect(w * x, h * y, w, h);
-		// 			}
-		// 		}
-		// ctx.fillStyle = 'white';
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		tileMap.render();
-	},
-	
-	MOVE_DELAY = 20,
-	nextMove = MOVE_DELAY,
-	
-	moveRandom = function() {
-		nextMove--;
-		if (nextMove == 0) {
-			var move = 2 + Math.floor(Math.random() * 10);
-			
-			switch(Math.floor(Math.random() * 4)) {
-				case 0:
-					offset.x += move;
-					break;
-				case 1:
-					offset.y += move;
-					break;
-				case 2:
-					offset.x -= move;
-					break;
-				case 3:
-					offset.y -= move;
-			};
-			
-			if (offset.x > 0) {
-				offset.x = 0;
-			} else if(offset.x < -(rows * TILE_SIZE) + canvas.width) {
-				offset.x = -(rows * TILE_SIZE) + canvas.width;
-			}
-			
-			if (offset.y > 0) {
-				offset.y = 0;
-			} else if (offset.y < -(cols * TILE_SIZE) + canvas.height) {
-				offset.y = -(cols * TILE_SIZE) + canvas.height;
-			}
-			
-			nextMove = MOVE_DELAY;
-			$('#stats').html('x: ' + offset.x + ' y: ' + offset.y);
-		}
+		player.render();
 	},
 	
 	mainLoop = function() {
@@ -267,6 +281,8 @@ var Game = (function($) {
 		
 		//moveRandom();
 		// FIXME blarg
+		player.update();
+		
 		draw();
 		
 		frames++;
@@ -275,6 +291,8 @@ var Game = (function($) {
 			frames = 0;
 			lastFrames = new Date();
 		}
+		
+		$('#stats').html('offset x: ' + offset.x + ' offset y: ' + offset.y + '. player x: ' + player.loc.x + ', player y: ' + player.loc.y);
 		
 		// setTimeout(mainLoop, 10);
 		window.requestAnimFrame(mainLoop, game[0]);
@@ -314,6 +332,8 @@ var Game = (function($) {
 			
 			spriteMap = new SpriteMap('spritemap.png', TILE_SIZE, TILE_SIZE);
 			tileMap = new TileMap();
+			
+			player = new Player(48, 48);
 					
 			frames = 0;
 			lastFrames = new Date();
