@@ -107,16 +107,13 @@ var Game = (function($) {
         },
         update: function(targetMob) {
             // Focus map view on the target mob
-            var x = targetMob.loc.x,
-                y = targetMob.loc.y;
-            
-            // ratio: tx + tx.w/2 - (canvas.w / 2)
+
             offset.x = -(targetMob.loc.x + (targetMob.size.width / 2) - (canvas.width / 2));
             offset.y = -(targetMob.loc.y + (targetMob.size.height / 2) - (canvas.height / 2));
 
             if (offset.x > 0) {
                 offset.x = 0;
-            } else if(offset.x < -(rows * TILE_SIZE) + canvas.width) {
+            } else if (offset.x < -(rows * TILE_SIZE) + canvas.width) {
                 offset.x = -(rows * TILE_SIZE) + canvas.width;
             }
             
@@ -152,6 +149,13 @@ var Game = (function($) {
             this.ticks = 4;
             this.color = randomRGB(200);
             this.dir = 1;
+        },
+        checkBounds: function() {
+            if (this.loc.x < 0) this.loc.x = 0;
+            if (this.loc.x + this.size.width > (rows * TILE_SIZE)) this.loc.x = (rows * TILE_SIZE) - this.size.width;
+            
+            if (this.loc.y < 0) this.loc.y = 0;
+            if (this.loc.y + this.size.height > (cols * TILE_SIZE)) this.loc.y = (rows * TILE_SIZE) - this.size.height;
         },
         update: function() {
             this.ticks--;
@@ -191,11 +195,7 @@ var Game = (function($) {
             this.loc.x -= this.motion.x;
             this.loc.y -= this.motion.y;
             
-            if (this.loc.x < 0) this.loc.x = 0;
-            if (this.loc.x + this.size.width > (rows * TILE_SIZE)) this.loc.x = (rows * TILE_SIZE) - this.size.width;
-            
-            if (this.loc.y < 0) this.loc.y = 0;
-            if (this.loc.y + this.size.height > (cols * TILE_SIZE)) this.loc.y = (rows * TILE_SIZE) - this.size.height;
+            this.checkBounds();
             
             this.motion = Point(0, 0);
         }
