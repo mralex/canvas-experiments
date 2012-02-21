@@ -14,9 +14,9 @@ body {
 }
 #screen {
 /*	background-color: #fff;*/
-/*	-webkit-border-radius: 10px;
-	border-radius: 10px;
-*/
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+
 }
 #overlay {
 	width: 720px;

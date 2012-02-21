@@ -215,7 +215,7 @@ var Game = (function($) {
             
             var nx = this.loc.x - this.motion.x,
                 ny = this.loc.y - this.motion.y,
-                tile1, tile2, dir, pad = TILE_SIZE / 8;
+                tile1, tile2, dir, pad = 22; //TILE_SIZE / 8;
             
             if (this.motion.y > 0) this.dir = this.dirs.n;
             if (this.motion.y < 0) this.dir = this.dirs.s;
