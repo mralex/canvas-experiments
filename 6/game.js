@@ -160,7 +160,13 @@ var Game = (function($) {
             this.speed = 1 + Math.random() * 2;
             this.ticks = 4;
             this.color = randomRGB(200);
-            this.dir = 1;
+            this.dir = 2;
+        },
+        dirs: {
+            n: 1,
+            s: 2,
+            e: 3,
+            w: 4
         },
         checkCollision: function() {
             
@@ -204,12 +210,6 @@ var Game = (function($) {
             this.color = '#ff0';
             this.motion = Point(0, 0);
         },
-        dirs: {
-            n: 1,
-            s: 2,
-            e: 3,
-            w: 4
-        },
         update: function() {
             if (this.motion.x == 0 && this.motion.y == 0) return;
             
@@ -217,12 +217,12 @@ var Game = (function($) {
                 ny = this.loc.y - this.motion.y,
                 tile1, tile2, dir, pad = TILE_SIZE / 8;
             
-            if (this.motion.y > 0) dir = this.dirs.n;
-            if (this.motion.y < 0) dir = this.dirs.s;
-            if (this.motion.x > 0) dir = this.dirs.w;
-            if (this.motion.x < 0) dir = this.dirs.e;
+            if (this.motion.y > 0) this.dir = this.dirs.n;
+            if (this.motion.y < 0) this.dir = this.dirs.s;
+            if (this.motion.x > 0) this.dir = this.dirs.w;
+            if (this.motion.x < 0) this.dir = this.dirs.e;
             
-            switch(dir) {
+            switch(this.dir) {
                 case this.dirs.n:
                     tile1 = tileMap.tileAtPos(nx + pad, ny + pad);
                     tile2 = tileMap.tileAtPos(nx + this.size.width - pad, ny + pad);
@@ -254,6 +254,16 @@ var Game = (function($) {
             this.checkBounds();
                         
             this.motion = Point(0, 0);
+        },
+        render: function() {
+            var sprite = 0;
+            
+            if (this.dir == this.dirs.n) sprite = 1;
+            if (this.dir == this.dirs.s) sprite = 0;
+            if (this.dir == this.dirs.e) sprite = 3;
+            if (this.dir == this.dirs.w) sprite = 2;
+            
+            spriteMap.draw(sprite, 2, this.loc.x + offset.x, this.loc.y + offset.y);
         }
     }),
         
