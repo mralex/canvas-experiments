@@ -10,12 +10,13 @@ body {
 	height: 480px;
 	margin: 0 auto;
 	position: relative;
-	
+
 }
 #screen {
-	background-color: #fff;
-	-webkit-border-radius: 10px;
+/*	background-color: #fff;*/
+/*	-webkit-border-radius: 10px;
 	border-radius: 10px;
+*/
 }
 #overlay {
 	width: 720px;

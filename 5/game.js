@@ -58,11 +58,12 @@ var Game = (function($) {
 			this.img = new Image();
 			this.img.src = url;
 			this.img.onload = function() {
-				console.log ('loaded image');
 				_this.loaded = true;
 			};
 		},
 		draw: function(sx, sy, dx, dy) {
+			if (!this.loaded) return;
+			
 			ctx.drawImage(this.img, sx * this.width, sy * this.height, this.width, this.height, dx, dy, this.width, this.height);
 		}
 	}),
@@ -262,9 +263,7 @@ var Game = (function($) {
 		
 		//moveRandom();
 		// FIXME blarg
-		if (spriteMap.loaded) {
-			draw();
-		}
+		draw();
 		
 		frames++;
 		if (now - lastFrames > 1000) {
@@ -273,6 +272,7 @@ var Game = (function($) {
 			lastFrames = new Date();
 		}
 		
+		// setTimeout(mainLoop, 10);
 		window.requestAnimFrame(mainLoop, game[0]);
 	};
 	
@@ -283,7 +283,13 @@ var Game = (function($) {
 				canvas = game[0];
 				
 				if (game[0].getContext) {
-					this.ctx = ctx = game[0].getContext('2d');
+					// Use WebGL acceleration where available
+					WebGL2D.enable(canvas);
+					this.ctx = ctx = canvas.getContext('webgl-2d');
+					if (ctx == null) {
+						this.log('WebGL not supported. Falling back to standard mode.');
+						this.ctx = ctx = canvas.getContext('2d');
+					}
 				} else {
 					this.log('Your browser doesn\'t support <strong>&lt;canvas/&gt;</strong>! :(');
 					return;
